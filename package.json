@@ -1,0 +1,41 @@
+{
+  "name": "ember-model-lawnchair",
+  "description": "An adapter so you can use Lawnchair as a store for ember-model",
+  "version": "0.1.0",
+  "homepage": "https://github.com/vitch/ember-model-lawnchair",
+  "author": {
+    "name": "Kelvin Luck",
+    "email": "git@kelvinluck.com",
+    "url": "https://github.com/vitch/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vitch/ember-model-lawnchair"
+  },
+  "bugs": {
+    "url": "https://github.com/vitch/ember-model-lawnchair/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/vitch/ember-model-lawnchair/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "devDependencies": {
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-qunit": "~0.2.2",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt": "~0.4.1"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.1"
+  },
+  "keywords": [
+    "ember", "ember-model", "lawnchair", "grunt"
+  ]
+}
