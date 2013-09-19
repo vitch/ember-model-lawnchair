@@ -13,12 +13,14 @@
                     var primaryKey = Ember.get(klass, "primaryKey");
                     Ember.assert('You cannot use a field named "key" in your object unless it is the primary key', !serialisedRecord.key || primaryKey === "key");
                     serialisedRecord.key = record.get(primaryKey);
-                    store.save(serialisedRecord, function(savedObject) {
+                    store.save(serialisedRecord, function(data) {
                         if (primaryKey != "key") {
-                            savedObject[primaryKey] = savedObject.key;
-                            delete savedObject.key;
+                            data[primaryKey] = data.key;
+                            delete data.key;
                         }
-                        resolve(savedObject);
+                        record.load(data[primaryKey], data);
+                        record.didCreateRecord();
+                        resolve(record);
                     });
                 });
             });
