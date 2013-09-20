@@ -6,6 +6,27 @@
   // A private lawn to put all of our lawnchairs (one per model type) on...
   var lawn = {};
 
+  // Lawnchair insists on using a key called "key" and adding it to our object. This swaps it back into the proper
+  // primaryKey selected for the object
+  var swapIds = function(klass, data) {
+    var primaryKey = Ember.get(klass, 'primaryKey');
+    if (primaryKey !== 'key') {
+      data[primaryKey] = data.key;
+      delete data.key;
+    }
+    return data;
+  };
+
+  var prepareForSave = function(klass, record) {
+    var serialisedRecord = record.toJSON();
+    // Lawnchair expects a field called "key" as the primary key so massage our data to fit...
+    var primaryKey = Ember.get(klass, 'primaryKey');
+    Ember.assert('You cannot use a field named "key" in your object unless it is the primary key',
+      !serialisedRecord.key || primaryKey === 'key');
+    serialisedRecord.key = record.get(primaryKey);
+    return serialisedRecord;
+  };
+
   Ember.LawnchairAdapter = Ember.Adapter.extend({
     // Desired Lawnchair adapter(s) to use - see http://brian.io/lawnchair/adapters/
     lawnchairAdapter: ['indexed-db'],
@@ -13,19 +34,24 @@
     prefix: 'em_',
     createRecord: function(record) {
       var klass = record.constructor;
-      var swapIds = this._swapIds;
       return this._initStore(this._getRecordType(klass)).then(function(store) {
         return new Ember.RSVP.Promise(function(resolve, reject) {
-          var serialisedRecord = record.toJSON();
-          // Lawnchair expects a field called "key" as the primary key so massage our data to fit...
-          var primaryKey = Ember.get(klass, 'primaryKey');
-          Ember.assert('You cannot use a field named "key" in your object unless it is the primary key',
-            !serialisedRecord.key || primaryKey === 'key');
-          serialisedRecord.key = record.get(primaryKey);
-          store.save(serialisedRecord, function(data) {
+          store.save(prepareForSave(klass, record), function(data) {
             swapIds(klass, data);
-            record.load(data[primaryKey], data);
+            record.load(data[Ember.get(klass, 'primaryKey')], data);
             record.didCreateRecord();
+            resolve(record);
+          });
+        });
+      });
+    },
+    saveRecord: function(record) {
+      var klass = record.constructor;
+      return this._initStore(this._getRecordType(klass)).then(function(store) {
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          store.save(prepareForSave(klass, record), function(data) {
+            swapIds(klass, data);
+            record.didSaveRecord();
             resolve(record);
           });
         });
@@ -44,7 +70,6 @@
     },
     find: function(record, id) {
       var klass = record.constructor;
-      var swapIds = this._swapIds;
       return this._initStore(this._getRecordType(klass)).then(function(store) {
         return new Ember.RSVP.Promise(function(resolve, reject) {
           store.get(id, function(loadedData) {
@@ -62,7 +87,6 @@
       });
     },
     findMany: function(klass, records, ids) {
-      var swapIds = this._swapIds;
       return this._initStore(this._getRecordType(klass)).then(function(store) {
         return new Ember.RSVP.Promise(function(resolve, reject) {
           store.get(ids, function(data) {
@@ -76,7 +100,6 @@
       });
     },
     findAll: function(klass, records) {
-      var swapIds = this._swapIds;
       return this._initStore(this._getRecordType(klass)).then(function(store) {
           return new Ember.RSVP.Promise(function(resolve, reject) {
             store.all(function(data) {
@@ -109,16 +132,6 @@
         'misleading but a named key is neccesary and the name "url" makes it easier to switch between this and the ' +
         'RESTAdapter', type);
       return type;
-    },
-    // Lawnchair insists on using a key called "key" and adding it to our object. This swaps it back into the proper
-    // primaryKey selected for the object
-    _swapIds: function(klass, data) {
-      var primaryKey = Ember.get(klass, 'primaryKey');
-      if (primaryKey !== 'key') {
-        data[primaryKey] = data.key;
-        delete data.key;
-      }
-      return data;
     }
   });
 })();

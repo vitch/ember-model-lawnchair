@@ -177,4 +177,17 @@
         });
       });
   });
+
+  asyncTest('when a record is created, saved and then edited and saved the adapter should save the new record', function() {
+    PostModel.create({id:1, title:'Hello world'}).save()
+      .then(function(model) {
+         model.set('title', 'Bonjour monde!').save().then(function() {
+           Ember.loadPromise(PostModel.find(1)).then(function(loadedPost) {
+             equal(loadedPost.get('title'), 'Bonjour monde!', 'The loaded model has the correct title');
+             start();
+           });
+         });
+      });
+  });
+
 })();
