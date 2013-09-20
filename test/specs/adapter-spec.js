@@ -190,4 +190,6 @@
       });
   });
 
+  // TODO: Test Model.find(<Object), Model.fetch(), Model.fetch(id), Model.fetch(<Object>), Model.load([]), Relationships
+
 })();
