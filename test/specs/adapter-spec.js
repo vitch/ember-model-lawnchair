@@ -1,4 +1,4 @@
-/*global QUnit, module, Ember, asyncTest, ok, start*/
+/*global QUnit, module, Ember, asyncTest, ok, deepEqual, start*/
 
 (function() {
   'use strict';
@@ -69,25 +69,9 @@
         var loadedPost = PostModel.find(postJson.id);
         return Ember.loadPromise(loadedPost).then(function() {
           ok(loadedPost, 'a post is found');
-          ok(loadedPost === savedPost, 'the loaded post is the same as the saved post');
+          deepEqual(loadedPost.toJSON(), savedPost.toJSON(), 'the loaded post is the same as the saved post');
           start();
         });
       });
-  });
-
-  asyncTest('when a record is created then deleted from the cache we should be still able to find it by its id', function() {
-    var postJson = {id: 1, title: 'Hello world'};
-    var createdPost = PostModel.create(postJson);
-    createdPost.on('didCreateRecord', function() {
-      PostModel.clearCache();
-
-      var loadedPost = PostModel.find(postJson.id);
-      Ember.loadPromise(loadedPost).then(function() {
-        ok(loadedPost, 'a post is found');
-        ok(loadedPost === createdPost, 'the loaded post is the same as the saved post');
-        start();
-      });
-    });
-    createdPost.save();
   });
 })();
