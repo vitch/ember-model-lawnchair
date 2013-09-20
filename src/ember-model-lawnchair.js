@@ -117,7 +117,7 @@
       var adapter = this.lawnchairAdapter;
       return new Ember.RSVP.Promise(function(resolve, reject) {
         if (!lawn[storeName]) {
-          Lawnchair({name: storeName, adapter: adapter}, function(store) {
+          new Lawnchair({name: storeName, adapter: adapter}, function(store) {
             lawn[storeName] = store;
             resolve(store);
           });

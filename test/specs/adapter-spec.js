@@ -22,7 +22,7 @@
       PostModel.url = 'posts';
 
       // Empty the IndexedDB:
-      Lawnchair({name: PostModel.adapter.prefix + PostModel.url, adapter: PostModel.adapter.lawnchairAdapter}, function(store) {
+      new Lawnchair({name: PostModel.adapter.prefix + PostModel.url, adapter: PostModel.adapter.lawnchairAdapter}, function(store) {
         store.nuke(function() {
           start();
         });
