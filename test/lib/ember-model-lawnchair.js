@@ -51,6 +51,20 @@
                 });
             });
         },
+        findMany: function(klass, records, ids) {
+            var swapIds = this._swapIds;
+            return this._initStore(this._getRecordType(klass)).then(function(store) {
+                return new Ember.RSVP.Promise(function(resolve, reject) {
+                    store.get(ids, function(data) {
+                        data.forEach(function(item) {
+                            swapIds(klass, item);
+                        });
+                        records.load(klass, data);
+                        resolve(records);
+                    });
+                });
+            });
+        },
         findAll: function(klass, records) {
             var swapIds = this._swapIds;
             return this._initStore(this._getRecordType(klass)).then(function(store) {

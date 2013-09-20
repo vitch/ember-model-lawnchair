@@ -1,4 +1,4 @@
-/*global QUnit, module, Ember, asyncTest, ok, deepEqual, start, stop, Lawnchair*/
+/*global QUnit, module, Ember, asyncTest, ok, equal, deepEqual, start, stop, Lawnchair*/
 
 (function() {
   'use strict';
@@ -137,7 +137,42 @@
       }).then(function() {
         var records = PostModel.find();
         Ember.loadPromise(records).then(function(records) {
-          equal(records.get('content').length, 2, 'There are two records');
+          equal(records.get('length'), 2, 'There are two records');
+          start();
+        });
+      });
+  });
+
+  asyncTest('when three records are created we should be able to find two of them with findMany', function() {
+    PostModel.create({id:1, title:'Hello world'}).save()
+      .then(function() {
+        return PostModel.create({id:2, title:'Goodbye cruel world'}).save();
+      }).then(function() {
+        return PostModel.create({id:3, title:'Wait a minute - it\'s little Mo!'}).save();
+      }).then(function() {
+        var records = PostModel.find([2,3]);
+        Ember.loadPromise(records).then(function(records) {
+          equal(records.get('length'), 2, 'Two records are found');
+          equal(records.get('firstObject.id'), 2, 'The first item has an ID of 1');
+          equal(records.get('lastObject.id'), 3, 'The lastitem has an ID of 3');
+          start();
+        });
+      });
+  });
+
+  asyncTest('when three records are created then the cache is cleared we should still be able to find two of them with findMany', function() {
+    PostModel.create({id:1, title:'Hello world'}).save()
+      .then(function() {
+        return PostModel.create({id:2, title:'Goodbye cruel world'}).save();
+      }).then(function() {
+        return PostModel.create({id:3, title:'Wait a minute - it\'s little Mo!'}).save();
+      }).then(function() {
+        PostModel.clearCache();
+        var records = PostModel.find([3,1]);
+        Ember.loadPromise(records).then(function(records) {
+          equal(records.get('length'), 2, 'Two records are found');
+          equal(records.get('firstObject.id'), 3, 'The first item has an ID of 1');
+          equal(records.get('lastObject.id'), 1, 'The lastitem has an ID of 3');
           start();
         });
       });
