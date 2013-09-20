@@ -31,13 +31,30 @@
         });
       });
     },
+    deleteRecord: function(record) {
+      var klass = record.constructor;
+      return this._initStore(this._getRecordType(klass)).then(function(store) {
+        return new Ember.RSVP.Promise(function(resolve, reject) {
+          store.remove(record.get(Ember.get(klass, 'primaryKey')), function() {
+            record.didDeleteRecord();
+            resolve(record);
+          });
+        });
+      });
+    },
     find: function(record, id) {
       var klass = record.constructor;
       var swapIds = this._swapIds;
       return this._initStore(this._getRecordType(klass)).then(function(store) {
         return new Ember.RSVP.Promise(function(resolve, reject) {
           store.get(id, function(loadedData) {
-            swapIds(klass, loadedData);
+            if (loadedData) {
+              swapIds(klass, loadedData);
+            } else {
+              // Weird behaviour but seems similar to what's implemented in current ember-model classes
+              // see https://github.com/ebryn/ember-model/issues/248
+              loadedData = {};
+            }
             record.load(id, loadedData);
             resolve(record);
           });
