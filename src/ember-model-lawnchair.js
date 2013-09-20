@@ -61,6 +61,20 @@
         });
       });
     },
+    findAll: function(klass, records) {
+      var swapIds = this._swapIds;
+      return this._initStore(this._getRecordType(klass)).then(function(store) {
+          return new Ember.RSVP.Promise(function(resolve, reject) {
+            store.all(function(data) {
+              data.forEach(function(item) {
+                swapIds(klass, item);
+              });
+              records.load(klass, data);
+              resolve(records);
+            });
+          });
+      });
+    },
     _initStore: function(type) {
       var storeName = this.prefix + type;
       var adapter = this.lawnchairAdapter;

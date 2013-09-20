@@ -115,4 +115,17 @@
         });
       });
   });
+
+  asyncTest('when two records are created findAll should return both records', function() {
+    PostModel.create({id:1, title:'Hello world'}).save()
+      .then(function() {
+        return PostModel.create({id:2, title:'Goodbye cruel world'}).save();
+      }).then(function() {
+        var records = PostModel.find();
+        Ember.loadPromise(records).then(function(records) {
+          equal(records.get('content').length, 2, 'There are two records');
+          start();
+        });
+      });
+  });
 })();
