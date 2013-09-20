@@ -1,4 +1,8 @@
+/*global Ember, Lawnchair*/
+
 (function() {
+  'use strict';
+
   // A private lawn to put all of our lawnchairs (one per model type) on...
   var lawn = {};
 
@@ -19,7 +23,7 @@
             !serialisedRecord.key || primaryKey === 'key');
           serialisedRecord.key = record.get(primaryKey);
           store.save(serialisedRecord, function(data) {
-            if (primaryKey != 'key') {
+            if (primaryKey !== 'key') {
               data[primaryKey] = data.key;
               delete data.key;
             }
@@ -28,7 +32,7 @@
             resolve(record);
           });
         });
-      })
+      });
     },
     _initStore: function(type) {
       var storeName = this.prefix + type;

@@ -1,5 +1,6 @@
-/*! ember-model-lawnchair 0.1.0 (dev) 2013-09-19 */
+/*! ember-model-lawnchair 0.1.0 (dev) 2013-09-20 */
 (function() {
+    "use strict";
     var lawn = {};
     Ember.LawnchairAdapter = Ember.Adapter.extend({
         lawnchairAdapter: [ "indexed-db" ],
@@ -14,7 +15,7 @@
                     Ember.assert('You cannot use a field named "key" in your object unless it is the primary key', !serialisedRecord.key || primaryKey === "key");
                     serialisedRecord.key = record.get(primaryKey);
                     store.save(serialisedRecord, function(data) {
-                        if (primaryKey != "key") {
+                        if (primaryKey !== "key") {
                             data[primaryKey] = data.key;
                             delete data.key;
                         }
