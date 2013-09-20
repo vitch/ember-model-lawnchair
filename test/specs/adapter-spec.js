@@ -1,4 +1,4 @@
-/*global QUnit, module, Ember, asyncTest, ok, deepEqual, start*/
+/*global QUnit, module, Ember, asyncTest, ok, deepEqual, start, stop, Lawnchair*/
 
 (function() {
   'use strict';
@@ -13,15 +13,23 @@
 
   module('Ember.LawnchairAdapter', {
     setup: function() {
+      stop();
       PostModel = Ember.Model.extend({
         id: Ember.attr(),
         title: Ember.attr()
       });
       PostModel.adapter = Ember.LawnchairAdapter.create();
       PostModel.url = 'posts';
+
+      // Empty the IndexedDB:
+      Lawnchair({name: PostModel.adapter.prefix + PostModel.url, adapter: PostModel.adapter.lawnchairAdapter}, function(store) {
+        store.nuke(function() {
+          start();
+        });
+      });
     },
     teardown: function() {
-
+      PostModel = null;
     }
   });
 
