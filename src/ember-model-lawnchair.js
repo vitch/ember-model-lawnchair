@@ -24,6 +24,7 @@
     Ember.assert('You cannot use a field named "key" in your object unless it is the primary key',
       !serialisedRecord.key || primaryKey === 'key');
     serialisedRecord.key = record.get(primaryKey);
+    delete serialisedRecord[primaryKey];
     return serialisedRecord;
   };
 

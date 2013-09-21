@@ -15,6 +15,7 @@
         var primaryKey = Ember.get(klass, "primaryKey");
         Ember.assert('You cannot use a field named "key" in your object unless it is the primary key', !serialisedRecord.key || primaryKey === "key");
         serialisedRecord.key = record.get(primaryKey);
+        delete serialisedRecord[primaryKey];
         return serialisedRecord;
     };
     Ember.LawnchairAdapter = Ember.Adapter.extend({
