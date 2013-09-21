@@ -21,6 +21,24 @@
     };
   };
 
+  var initModel = function() {
+    PostModel = Ember.Model.extend({
+      id: Ember.attr(),
+      title: Ember.attr()
+    });
+    PostModel.adapter = Ember.LawnchairAdapter.create();
+    PostModel.url = 'posts';
+  }
+
+  var emptyDB = function() {
+    // Empty the IndexedDB:
+    new Lawnchair({name: PostModel.adapter.prefix + PostModel.url, adapter: PostModel.adapter.lawnchairAdapter}, function(store) {
+      store.nuke(function() {
+        start();
+      });
+    });
+  }
+
   var clearCache = function(klass) {
     return function(m) {
       klass.clearCache();
@@ -31,27 +49,20 @@
     };
   };
 
-  module('Ember.LawnchairAdapter', {
-    setup: function() {
-      stop();
-      PostModel = Ember.Model.extend({
-        id: Ember.attr(),
-        title: Ember.attr()
-      });
-      PostModel.adapter = Ember.LawnchairAdapter.create();
-      PostModel.url = 'posts';
+  var initModule = function(name) {
+    module('Ember.LawnchairAdapter.' + name, {
+      setup: function() {
+        stop();
+        initModel();
+        emptyDB();
+      },
+      teardown: function() {
+        PostModel = null;
+      }
+    });
+  };
 
-      // Empty the IndexedDB:
-      new Lawnchair({name: PostModel.adapter.prefix + PostModel.url, adapter: PostModel.adapter.lawnchairAdapter}, function(store) {
-        store.nuke(function() {
-          start();
-        });
-      });
-    },
-    teardown: function() {
-      PostModel = null;
-    }
-  });
+  initModule('createRecord()');
 
   asyncTest('when a record is created with no ID an ID should be automatically set', function() {
     PostModel.create({title: 'Hello world'}).save()
@@ -69,6 +80,8 @@
         start();
       });
   });
+
+  initModule('findRecord()');
 
   asyncTest('when a record is created we should be able to find it by its id', function() {
     PostModel.create(post1Json).save()
@@ -96,6 +109,8 @@
         });
       });
   });
+
+  initModule('deleteRecord()');
 
   asyncTest('when a record is deleted it should be marked as deleted', function() {
     PostModel.create(post1Json).save()
@@ -129,6 +144,8 @@
       });
   });
 
+  initModule('findAll()');
+
   asyncTest('when two records are created findAll should return both records', function() {
     PostModel.create(post1Json).save()
       .then(createAndSave(PostModel, post2Json))
@@ -153,6 +170,8 @@
         });
       });
   });
+
+  initModule('findMany()');
 
   asyncTest('when three records are created we should be able to find two of them with findMany', function() {
     PostModel.create(post1Json).save()
@@ -185,6 +204,8 @@
       });
   });
 
+  initModule('saveRecord()');
+
   asyncTest('when a record is created, saved and then edited and saved the adapter should save the new record', function() {
     PostModel.create(post1Json).save()
       .then(function(model) {
@@ -196,6 +217,8 @@
          });
       });
   });
+
+  initModule('findQuery()');
 
   asyncTest('when we call find(<Object>) it should call findQuery on the adapter and return a matching record if there is one', function() {
     PostModel.create(post1Json).save()
@@ -226,6 +249,8 @@
       });
   });
 
+  initModule('fetchAll()');
+
   asyncTest('Model.fetch should load all inserted records', function() {
     PostModel.create(post1Json).save()
       .then(createAndSave(PostModel, post2Json))
@@ -240,6 +265,8 @@
         start();
       });
   });
+
+  initModule('fetch()');
 
   asyncTest('Model.fetch(id) should load one matching record', function() {
     PostModel.create(post1Json).save()
@@ -256,7 +283,9 @@
       });
   });
 
-  asyncTest('when we call fetch(<Object>) it should call findQuery on the adapter and return a matching record if there is one', function() {
+  initModule('fetchQuery()');
+
+  asyncTest('when we call fetch(<Object>) it should call fetchQuery on the adapter and return a matching record if there is one', function() {
     PostModel.create(post1Json).save()
       .then(createAndSave(PostModel, post2Json))
       .then(createAndSave(PostModel, post3Json))
@@ -269,7 +298,7 @@
       });
   });
 
-  asyncTest('when we call fetch(<Object>) with a RegExp it should call findQuery on the adapter and return any matching records', function() {
+  asyncTest('when we call fetch(<Object>) with a RegExp it should call fetchQuery on the adapter and return any matching records', function() {
     PostModel.create(post1Json).save()
       .then(createAndSave(PostModel, post2Json))
       .then(createAndSave(PostModel, post3Json))
