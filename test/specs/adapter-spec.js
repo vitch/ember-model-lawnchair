@@ -28,7 +28,7 @@
       var promise = Ember.Deferred.create();
       promise.resolve(m);
       return promise;
-    }
+    };
   };
 
   module('Ember.LawnchairAdapter', {
