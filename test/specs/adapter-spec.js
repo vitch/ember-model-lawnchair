@@ -226,6 +226,64 @@
       });
   });
 
-  // TODO: Model.fetch(), Model.fetch(id), Model.fetch(<Object>), Model.load([]), Relationships
+  asyncTest('Model.fetch should load all inserted records', function() {
+    PostModel.create(post1Json).save()
+      .then(createAndSave(PostModel, post2Json))
+      .then(createAndSave(PostModel, post3Json))
+      .then()
+      .then(function() {
+        PostModel.fetch().then(function(records) {
+          equal(records.get('length'), 3, 'Three records are found');
+          equal(records.get('firstObject.id'), 1, 'The first found item has an ID of 1');
+          equal(records.get('lastObject.id'), 3, 'The last found item has an ID of 3');
+        });
+        start();
+      });
+  });
+
+  asyncTest('Model.fetch(id) should load one matching record', function() {
+    PostModel.create(post1Json).save()
+      .then(createAndSave(PostModel, post2Json))
+      .then(createAndSave(PostModel, post3Json))
+      .then()
+      .then(function() {
+        PostModel.fetch(2).then(function(record) {
+          ok(record, 'One record is found');
+          ok(record.isLoaded, 'The found item is marked as loaded');
+          equal(record.get('id'), 2, 'The found item has an id of 2');
+        });
+        start();
+      });
+  });
+
+  asyncTest('when we call fetch(<Object>) it should call findQuery on the adapter and return a matching record if there is one', function() {
+    PostModel.create(post1Json).save()
+      .then(createAndSave(PostModel, post2Json))
+      .then(createAndSave(PostModel, post3Json))
+      .then(function() {
+        PostModel.fetch({title: 'Hello world'}).then(function(records) {
+          equal(records.get('length'), 1, 'One record is found');
+          equal(records.get('firstObject.id'), 1, 'The found item has an ID of 1');
+          start();
+        });
+      });
+  });
+
+  asyncTest('when we call fetch(<Object>) with a RegExp it should call findQuery on the adapter and return any matching records', function() {
+    PostModel.create(post1Json).save()
+      .then(createAndSave(PostModel, post2Json))
+      .then(createAndSave(PostModel, post3Json))
+      .then(function() {
+        PostModel.fetch({title: /world/}).then(function(records) {
+            equal(records.get('length'), 2, 'Two records are found');
+            equal(records.get('firstObject.id'), 1, 'The first found item has an ID of 1');
+            equal(records.get('lastObject.id'), 2, 'The last found item has an ID of 2');
+            start();
+          }
+        );
+      });
+  });
+
+  // TODO: Model.load([]), Relationships
 
 })();
