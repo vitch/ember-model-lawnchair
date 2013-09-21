@@ -72,6 +72,37 @@
                 });
             });
         },
+        findQuery: function(klass, records, params) {
+            return this._initStore(this._getRecordType(klass)).then(function(store) {
+                return new Ember.RSVP.Promise(function(resolve, reject) {
+                    var paramKeys = Object.keys(params);
+                    store.all(function(loadedData) {
+                        var found = loadedData.filter(function(item) {
+                            var isMatch = true;
+                            paramKeys.forEach(function(key) {
+                                var param = params[key];
+                                var value = item[key];
+                                if (Ember.typeOf(param) === "regexp") {
+                                    if (!value.match(param)) {
+                                        isMatch = false;
+                                    }
+                                } else {
+                                    if (value !== param) {
+                                        isMatch = false;
+                                    }
+                                }
+                            });
+                            return isMatch;
+                        });
+                        found.forEach(function(data) {
+                            return swapIds(klass, data);
+                        });
+                        records.load(klass, found);
+                        resolve(records);
+                    });
+                });
+            });
+        },
         findMany: function(klass, records, ids) {
             return this._initStore(this._getRecordType(klass)).then(function(store) {
                 return new Ember.RSVP.Promise(function(resolve, reject) {

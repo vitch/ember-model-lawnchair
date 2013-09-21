@@ -197,6 +197,35 @@
       });
   });
 
-  // TODO: Test Model.find(<Object>), Model.fetch(), Model.fetch(id), Model.fetch(<Object>), Model.load([]), Relationships
+  asyncTest('when we call find(<Object>) it should call findQuery on the adapter and return a matching record if there is one', function() {
+    PostModel.create(post1Json).save()
+      .then(createAndSave(PostModel, post2Json))
+      .then(createAndSave(PostModel, post3Json))
+      .then(function() {
+        var records = PostModel.find({title: 'Hello world'});
+        Ember.loadPromise(records).then(function(records) {
+          equal(records.get('length'), 1, 'One record is found');
+          equal(records.get('firstObject.id'), 1, 'The found item has an ID of 1');
+          start();
+        });
+      });
+  });
+
+  asyncTest('when we call find(<Object>) with a RegExp it should call findQuery on the adapter and return any matching records', function() {
+    PostModel.create(post1Json).save()
+      .then(createAndSave(PostModel, post2Json))
+      .then(createAndSave(PostModel, post3Json))
+      .then(function() {
+        var records = PostModel.find({title: /world/});
+        Ember.loadPromise(records).then(function(records) {
+          equal(records.get('length'), 2, 'Two records are found');
+          equal(records.get('firstObject.id'), 1, 'The first found item has an ID of 1');
+          equal(records.get('lastObject.id'), 2, 'The last found item has an ID of 2');
+          start();
+        });
+      });
+  });
+
+  // TODO: Model.fetch(), Model.fetch(id), Model.fetch(<Object>), Model.load([]), Relationships
 
 })();
