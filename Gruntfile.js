@@ -47,6 +47,15 @@ module.exports = function(grunt) {
     qunit: {
       files: ['test/**/*.html']
     },
+    connect: {
+      test: {
+        options: {
+          base: 'test/',
+          port: 8000,
+          hostname: '0.0.0.0'
+        }
+      }
+    },
     watch: {
       src: {
         files: 'src/*.js',
@@ -68,6 +77,7 @@ module.exports = function(grunt) {
   });
 
   // These plugins provide necessary tasks.
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
@@ -75,6 +85,7 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'uglify:test', 'qunit']);
+  grunt.registerTask('develop', ['jshint', 'uglify:test', 'connect', 'watch']);
   grunt.registerTask('dist', ['uglify:dist']);
 
 };

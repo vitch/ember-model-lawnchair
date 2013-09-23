@@ -41,7 +41,7 @@ resolved.
 The library is built with [grunt](http://gruntjs.com) - there are a few commands available:
 
     grunt dist # build a release version in /dist
-    grunt watch:browserTest # watch for changes to the files and copy the relevant files so you can run the tests in the browser
+    grunt develop # watch for changes to the files and allow running of tests in the browser (at http://0.0.0.0:8000/)
     grunt # lint then build a test version and run tests in PhantomJS (see below)
 
 **Note** that since IndexedDB is [not yet available](https://github.com/ariya/phantomjs/issues/10992) in PhantomJS and
