@@ -38,7 +38,10 @@ resolved.
 
 ##Build
 
-The library is built with [grunt](http://gruntjs.com) - there are a few commands available:
+The library is built with [grunt](http://gruntjs.com). Make you have installed `grunt-cli` (npm install -g grunt-cli`)
+then install all npm dependencies for this project (`npm install`).
+
+Now there are a few targets available:
 
     grunt dist # build a release version in /dist
     grunt develop # watch for changes to the files and allow running of tests in the browser (at http://0.0.0.0:8000/)
