@@ -38,7 +38,7 @@ resolved.
 
 ##Build
 
-The library is built with [grunt](http://gruntjs.com). Make you have installed `grunt-cli` (npm install -g grunt-cli`)
+The library is built with [grunt](http://gruntjs.com). Make you have installed `grunt-cli` (`npm install -g grunt-cli`)
 then install all npm dependencies for this project (`npm install`).
 
 Now there are a few targets available:
